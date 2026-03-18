@@ -23,8 +23,37 @@ footer{margin-top:50px;color:#64748b;font-size:0.9rem}
 <div class="logo">🤖</div>
 <h1>IA-ACMULLER</h1>
 <p>Inteligência Artificial 100% gratuita para Android.<br>Chat, código, voz, vídeo, agente autônomo e mais.</p>
-<a href="#" class="btn" onclick="alert('curl -fsSL ia-acmuller.github.io/install.sh | bash')">📱 Instalar no Termux</a>
-<a href="#" class="btn btn2" onclick="alert('APK em desenvolvimento!')">⚡ Baixar APK</a>
+<!-- BOTÃO INSTALAR - Copia comando automaticamente -->
+<a href="#" class="btn" onclick="instalarIA()" style="cursor:pointer">
+    📱 Instalar IA-ACMULLER
+</a>
+
+<!-- BOTÃO TERMUX - Redireciona para F-Droid -->
+<a href="https://f-droid.org/packages/com.termux/" target="_blank" class="btn btn2" style="background:#2d3748">
+    📲 Baixar Termux Primeiro
+</a>
+
+<script>
+function instalarIA() {
+    const comando = 'curl -fsSL https://acmuller79.github.io/install.sh | bash';
+    
+    // Tenta copiar para área de transferência
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(comando).then(function() {
+            alert('✅ Comando copiado!\n\nAgora:\n1. Abra o Termux\n2. Cole o comando\n3. Enter para instalar');
+        });
+    } else {
+        // Fallback para mobile
+        const textArea = document.createElement("textarea");
+        textArea.value = comando;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert('✅ Comando copiado!\n\nAgora:\n1. Abra o Termux\n2. Cole o comando\n3. Enter para instalar');
+    }
+}
+</script>
 <div class="features">
 <div class="feature">💬<span class="feature-label">Chat</span></div>
 <div class="feature">💻<span class="feature-label">Código</span></div>
