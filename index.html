@@ -1,336 +1,135 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA-ACMULLER</title>
-    
-    <!-- PWA Config -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#6366f1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="IA-ACMULLER">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            color: #ffffff;
-            min-height: 100vh;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .logo {
-            font-size: 5rem;
-            margin-bottom: 10px;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #6366f1, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-        
-        .tagline {
-            color: #94a3b8;
-            font-size: 1rem;
-            margin-bottom: 30px;
-            line-height: 1.6;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .btn {
-            display: block;
-            width: 90%;
-            max-width: 320px;
-            margin: 15px auto;
-            padding: 18px 24px;
-            border-radius: 16px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: white;
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.4);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        }
-        
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-        }
-        
-        .features {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin: 40px 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .feature {
-            background: #1e293b;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-size: 1.5rem;
-            transition: transform 0.2s;
-        }
-        
-        .feature:hover {
-            transform: translateY(-5px);
-        }
-        
-        .feature-label {
-            display: block;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
-        
-        .terminal {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 16px;
-            padding: 20px;
-            margin: 30px auto;
-            max-width: 90%;
-            text-align: left;
-            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-            font-size: 0.875rem;
-            line-height: 1.6;
-            overflow-x: auto;
-        }
-        
-        .terminal-header {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        
-        .dot-red { background: #ff5f56; }
-        .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; }
-        
-        .terminal-body {
-            color: #e6edf3;
-        }
-        
-        .prompt { color: #7ee787; }
-        .command { color: #ffffff; }
-        .output { color: #a5d6ff; }
-        
-        footer {
-            margin-top: 50px;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-        
-        #install-btn {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #22c55e;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            border: none;
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
-            z-index: 1000;
-            cursor: pointer;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.05); }
-        }
-        
-        #install-btn.show {
-            display: block;
-        }
-        
-        @media (max-width: 480px) {
-            h1 { font-size: 2rem; }
-            .features { gap: 10px; }
-            .feature { padding: 12px 15px; font-size: 1.3rem; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA-ACMULLER</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #0f172a;
+  color: #fff;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.logo { font-size: 5rem; margin-bottom: 10px; }
+
+h1 {
+  background: linear-gradient(90deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+p { color: #94a3b8; margin-bottom: 30px; }
+
+.btn {
+  display: block;
+  width: 90%;
+  max-width: 300px;
+  margin: 15px auto;
+  padding: 18px;
+  background: #22c55e;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn2 { background: #6366f1; }
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 40px 0;
+}
+
+.feature { background: #1e293b; padding: 15px 20px; border-radius: 10px; font-size: 1.5rem; }
+
+footer { margin-top: 50px; color: #64748b; font-size: 0.9rem; }
+
+#install-btn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  border: none;
+  z-index: 1000;
+}
+</style>
 </head>
+
 <body>
-    <div class="logo">🤖</div>
-    
-    <h1>IA-ACMULLER</h1>
-    
-    <p class="tagline">
-        Inteligência Artificial 100% gratuita para Android.<br>
-        Chat, código, voz, vídeo, agente autônomo e mais.
-    </p>
-    
-    <a href="#" class="btn btn-primary" onclick="copiarComando()">
-        📱 Instalar no Termux
-    </a>
-    
-    <a href="https://f-droid.org/packages/com.termux/" target="_blank" class="btn btn-secondary">
-        📲 Baixar Termux Primeiro
-    </a>
-    
-    <div class="features">
-        <div class="feature">
-            💬
-            <span class="feature-label">Chat</span>
-        </div>
-        <div class="feature">
-            💻
-            <span class="feature-label">Código</span>
-        </div>
-        <div class="feature">
-            🎙️
-            <span class="feature-label">Voz</span>
-        </div>
-        <div class="feature">
-            📹
-            <span class="feature-label">Vídeo</span>
-        </div>
-        <div class="feature">
-            🤖
-            <span class="feature-label">Agente</span>
-        </div>
-        <div class="feature">
-            📱
-            <span class="feature-label">WhatsApp</span>
-        </div>
-    </div>
-    
-    <div class="terminal">
-        <div class="terminal-header">
-            <span class="dot dot-red"></span>
-            <span class="dot dot-yellow"></span>
-            <span class="dot dot-green"></span>
-        </div>
-        <div class="terminal-body">
-            <span class="prompt">$</span> <span class="command">curl -fsSL acmuller79.github.io/install.sh | bash</span><br>
-            <span class="output">✓ IA-ACMULLER instalado!</span><br><br>
-            
-            <span class="prompt">$</span> <span class="command">ia-acmuller chat "Crie uma função Python"</span><br>
-            <span class="output">🤖 Aqui está o código...</span>
-        </div>
-    </div>
-    
-    <footer>
-        <p>© 2026 IA-ACMULLER • Open Source • Feito com 💜</p>
-    </footer>
-    
-    <!-- Botão instalar PWA -->
-    <button id="install-btn" onclick="installPWA()">
-        📲 Instalar App
-    </button>
-    
-    <script>
-        // Registra Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW registrado!'))
-                .catch(err => console.log('SW erro:', err));
-        }
-        
-        // Detecta se pode instalar
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').classList.add('show');
-        });
-        
-        // Instala o PWA
-        function installPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Usuário instalou o PWA');
-                        document.getElementById('install-btn').style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                alert('📱 Para instalar:\n\nAndroid: Menu (3 pontos) → "Adicionar à tela inicial"\niPhone: Compartilhar → "Adicionar à Tela de Início"');
-            }
-        }
-        
-        // Verifica se já está instalado
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA foi instalado!');
-            document.getElementById('install-btn').style.display = 'none';
-            deferredPrompt = null;
-        });
-        
-        // Copiar comando de instalação
-        function copiarComando() {
-            const comando = 'curl -fsSL https://acmuller79.github.io/install.sh | bash';
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(comando).then(function() {
-                    alert('✅ Comando copiado!\n\nAgora:\n1. Abra o Termux\n2. Cole o comando (segure a tela → Colar)\n3. Toque Enter para instalar');
-                });
-            } else {
-                // Fallback
-                const textArea = document.createElement("textarea");
-                textArea.value = comando;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand("copy");
-                document.body.removeChild(textArea);
-                alert('✅ Comando copiado!\n\nAgora:\n1. Abra o Termux\n2. Cole o comando\n3. Toque Enter para instalar');
-            }
-        }
-    </script>
+<div class="logo">🤖</div>
+<h1>IA-ACMULLER</h1>
+<p>Inteligência Artificial 100% gratuita para Android.<br>Chat, código, voz, vídeo, agente autônomo e mais.</p>
+
+<a href="#" class="btn" onclick="copiar()">📱 Instalar no Termux</a>
+<a href="https://f-droid.org/packages/com.termux/" class="btn btn2">📲 Baixar Termux</a>
+
+<div class="features">
+<div class="feature">💬<br><small>Chat</small></div>
+<div class="feature">💻<br><small>Código</small></div>
+<div class="feature">🎙️<br><small>Voz</small></div>
+<div class="feature">📹<br><small>Vídeo</small></div>
+<div class="feature">🤖<br><small>Agente</small></div>
+<div class="feature">📱<br><small>WhatsApp</small></div>
+</div>
+
+<footer>© 2026 IA-ACMULLER • Open Source • 💜</footer>
+
+<button id="install-btn" onclick="instalar()">📲 Instalar App</button>
+
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-btn').style.display = 'block';
+});
+
+function instalar() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      document.getElementById('install-btn').style.display = 'none';
+      deferredPrompt = null;
+    });
+  } else {
+    alert('📱 Android: Menu → "Adicionar à tela inicial"\niPhone: Compartilhar → "Adicionar à Tela de Início"');
+  }
+}
+
+function copiar() {
+  const cmd = 'curl -fsSL https://acmuller79.github.io/install.sh | bash';
+  navigator.clipboard.writeText(cmd).then(() => {
+    alert('✅ Comando copiado! Abra o Termux e cole.');
+  });
+}
+</script>
 </body>
 </html>
