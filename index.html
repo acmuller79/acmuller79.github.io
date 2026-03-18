@@ -5,6 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IA-ACMULLER</title>
 <style>
+    <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA-ACMULLER</title>
+
+<!-- PWA Config -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IA-ACMULLER">
+
+<!-- Ícone Apple -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+/* Seu CSS atual aqui... */
+
+/* Botão instalar PWA (aparece só quando disponível) */
+#install-btn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+  z-index: 1000;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+}
+
+#install-btn.show {
+  display: block;
+}
+</style>
+</head>
+<body>
+<!-- Seu conteúdo atual... -->
+
+<!-- Botão instalar PWA -->
+<button id="install-btn" onclick="installPWA()">
+  📲 Instalar App
+</button>
+
+<script>
+// Registra Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => console.log('SW registrado!'))
+    .catch(err => console.log('SW erro:', err));
+}
+
+// Detecta se pode instalar
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-btn').classList.add('show');
+});
+
+// Instala o PWA
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Usuário instalou o PWA');
+        document.getElementById('install-btn').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    // Fallback para iOS/Safari
+    alert('📱 Para instalar:\n\nAndroid: Menu → "Adicionar à tela inicial"\niPhone: Compartilhar → "Adicionar à Tela de Início"');
+  }
+}
+
+// Verifica se já está instalado
+window.addEventListener('appinstalled', () => {
+  console.log('PWA foi instalado!');
+  document.getElementById('install-btn').style.display = 'none';
+  deferredPrompt = null;
+});
+</script>
+</body>
+</html>
 body{font-family:system-ui,sans-serif;background:#0f172a;color:#fff;text-align:center;padding:40px 20px;margin:0}
 .logo{font-size:5rem;margin-bottom:10px}
 h1{background:linear-gradient(90deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin-bottom:20px}
