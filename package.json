@@ -1,0 +1,24 @@
+{
+  "name": "acmuller-ai",
+  "version": "2.0.0",
+  "description": "IA-ACMULLER - Inteligência Artificial Multi-Modelo para Web",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "gemini",
+    "openai",
+    "claude",
+    "vercel"
+  ],
+  "author": "ACMuller79",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}
