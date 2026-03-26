@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA-ACMULLER 🤖 | Inteligência Artificial Multi-Modelo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <span class="logo-text">IA-ACMULLER</span>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-section="chat">
+                    <span class="nav-icon">💬</span>
+                    <span>Chat</span>
+                </button>
+                <button class="nav-item" data-section="code">
+                    <span class="nav-icon">💻</span>
+                    <span>Código</span>
+                </button>
+                <button class="nav-item" data-section="voice">
+                    <span class="nav-icon">🎙️</span>
+                    <span>Voz</span>
+                </button>
+                <button class="nav-item" data-section="video">
+                    <span class="nav-icon">📹</span>
+                    <span>Vídeo</span>
+                </button>
+                <button class="nav-item" data-section="agent">
+                    <span class="nav-icon">🤖</span>
+                    <span>Agente</span>
+                </button>
+            </nav>
+
+            <div class="ai-selector">
+                <label>Modelo de IA</label>
+                <select id="ai-model">
+                    <option value="gemini">🧠 Google Gemini (Free)</option>
+                    <option value="openai">🤖 OpenAI GPT (Free Tier)</option>
+                    <option value="claude">📝 Anthropic Claude (Free)</option>
+                    <option value="ollama">🏠 Ollama Local</option>
+                    <option value="auto">⚡ Auto (Melhor disponível)</option>
+                </select>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="settings-btn" onclick="toggleSettings()">⚙️ Configurações</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <h1 id="section-title">Chat Inteligente</h1>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="clearCurrent()">🗑️ Limpar</button>
+                    <button class="btn-primary" onclick="exportConversation()">📥 Exportar</button>
+                </div>
+            </header>
+
+            <!-- Sections -->
+            <div class="content-area">
+                <!-- Chat Section -->
+                <section id="chat-section" class="section active">
+                    <div class="chat-container">
+                        <div id="chat-messages" class="messages">
+                            <div class="welcome-message">
+                                <h2>👋 Bem-vindo ao IA-ACMULLER</h2>
+                                <p>Escolha um modelo de IA no menu lateral e comece a conversar!</p>
+                                <div class="quick-actions">
+                                    <button onclick="sendQuickMessage('Explique conceitos complexos de forma simples')">📚 Explicar conceitos</button>
+                                    <button onclick="sendQuickMessage('Ajude-me a resolver um problema')">🔧 Resolver problemas</button>
+                                    <button onclick="sendQuickMessage('Crie um resumo detalhado')">📝 Criar resumo</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-area">
+                            <div class="input-wrapper">
+                                <textarea id="chat-input" placeholder="Digite sua mensagem... (Shift+Enter para nova linha)" rows="1"></textarea>
+                                <div class="input-actions">
+                                    <button onclick="attachFile()" title="Anexar arquivo">📎</button>
+                                    <button onclick="sendMessage()" class="send-btn" title="Enviar">➤</button>
+                                </div>
+                            </div>
+                            <div class="input-info">
+                                <span id="model-status">🟢 Gemini ativo</span>
+                                <span>Enter para enviar • Shift+Enter para nova linha</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Code Section -->
+                <section id="code-section" class="section">
+                    <div class="code-container">
+                        <div class="code-editor-wrapper">
+                            <div class="editor-header">
+                                <select id="language-select">
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="html">HTML/CSS</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="sql">SQL</option>
+                                </select>
+                                <div class="editor-actions">
+                                    <button onclick="runCode()">▶️ Executar</button>
+                                    <button onclick="formatCode()">🎨 Formatar</button>
+                                    <button onclick="explainCode()">💡 Explicar</button>
+                                </div>
+                            </div>
+                            <textarea id="code-editor" placeholder="// Cole ou digite seu código aqui...
+// A IA vai ajudar a gerar, corrigir ou explicar"></textarea>
+                            <div id="code-output" class="code-output">
+                                <div class="output-header">Console Output</div>
+                                <pre id="output-content">// Clique em "Executar" para ver o resultado</pre>
+                            </div>
+                        </div>
+                        <div class="code-sidebar">
+                            <div class="ai-assistant">
+                                <h3>🤖 Assistente de Código</h3>
+                                <div id="code-chat" class="mini-chat"></div>
+                                <input type="text" id="code-question" placeholder="Peça para gerar ou corrigir código...">
+                                <button onclick="askCodeAI()">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Voice Section -->
+                <section id="voice-section" class="section">
+                    <div class="voice-container">
+                        <div class="voice-main">
+                            <div class="voice-visualizer">
+                                <canvas id="audio-visualizer"></canvas>
+                                <div class="voice-status" id="voice-status">Clique no microfone para começar</div>
+                            </div>
+                            <div class="voice-controls">
+                                <button id="mic-btn" class="mic-button" onclick="toggleVoice()">
+                                    <span class="mic-icon">🎙️</span>
+                                    <span class="mic-text">Iniciar Gravação</span>
+                                </button>
+                                <div class="voice-options">
+                                    <label>
+                                        <input type="checkbox" id="continuous-mode"> Modo contínuo
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="auto-send" checked> Enviar automaticamente
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="voice-sidebar">
+                            <h3>📝 Transcrição</h3>
+                            <div id="voice-transcript" class="transcript-box"></div>
+                            <h3>🤖 Resposta da IA</h3>
+                            <div id="voice-response" class="response-box"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Video Section -->
+                <section id="video-section" class="section">
+                    <div class="video-container">
+                        <div class="video-upload-area" id="video-drop-zone">
+                            <div class="upload-prompt">
+                                <span class="upload-icon">📹</span>
+                                <h3>Arraste um vídeo ou clique para selecionar</h3>
+                                <p>Suporta: MP4, WebM, MOV (máx 50MB)</p>
+                                <input type="file" id="video-input" accept="video/*" hidden>
+                            </div>
+                        </div>
+                        <div class="video-preview" id="video-preview" style="display:none;">
+                            <video id="video-player" controls></video>
+                            <div class="video-analysis">
+                                <h3>🔍 Análise de Vídeo</h3>
+                                <div class="analysis-options">
+                                    <button onclick="analyzeVideo('frames')">📸 Analisar frames</button>
+                                    <button onclick="analyzeVideo('audio')">🎵 Transcrever áudio</button>
+                                    <button onclick="analyzeVideo('full')">🎯 Análise completa</button>
+                                </div>
+                                <div id="video-results" class="analysis-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Agent Section -->
+                <section id="agent-section" class="section">
+                    <div class="agent-container">
+                        <div class="agent-setup">
+                            <h2>🤖 Configurar Agente Autônomo</h2>
+                            <div class="agent-form">
+                                <div class="form-group">
+                                    <label>Objetivo do Agente</label>
+                                    <textarea id="agent-goal" placeholder="Ex: Pesquise sobre inteligência artificial e crie um resumo detalhado"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Passos máximos</label>
+                                        <input type="number" id="max-steps" value="5" min="1" max="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Modo</label>
+                                        <select id="agent-mode">
+                                            <option value="sequential">Sequencial</option>
+                                            <option value="parallel">Paralelo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn-primary btn-large" onclick="startAgent()">
+                                    🚀 Iniciar Agente
+                                </button>
+                            </div>
+                        </div>
+                        <div class="agent-execution" id="agent-execution" style="display:none;">
+                            <h3>⚡ Execução em andamento</h3>
+                            <div id="agent-steps" class="steps-container"></div>
+                            <div id="agent-result" class="agent-result"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Configurações</h2>
+                    <button class="close-btn" onclick="toggleSettings()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>🔑 API Keys</h3>
+                        <div class="form-group">
+                            <label>Google Gemini API Key</label>
+                            <input type="password" id="gemini-key" placeholder="AIza...">
+                            <small>Obtenha em <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></small>
+                        </div>
+                        <div class="form-group">
+                            <label>OpenAI API Key</label>
+                            <input type="password" id="openai-key" placeholder="sk-...">
+                            <small>Obtenha em <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Anthropic API Key</label>
+                            <input type="password" id="claude-key" placeholder="sk-ant-...">
+                            <small>Obtenha em <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Ollama URL (local)</label>
+                            <input type="text" id="ollama-url" value="http://localhost:11434" placeholder="http://localhost:11434">
+                            <small>Para uso local com Ollama</small>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>🎨 Aparência</h3>
+                        <div class="form-group">
+                            <label>Tema</label>
+                            <select id="theme-select">
+                                <option value="dark">🌙 Escuro</option>
+                                <option value="light">☀️ Claro</option>
+                                <option value="auto">🔄 Automático</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="toggleSettings()">Cancelar</button>
+                    <button class="btn-primary" onclick="saveSettings()">💾 Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
