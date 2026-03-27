@@ -1,15 +1,14 @@
-// IA-ACMULLER Web - Versão com Debug
+// IA-ACMULLER Web - Versão Final com modelo correto
 
 class ACMullerAI {
     constructor() {
         this.currentModel = 'gemini';
         this.conversation = [];
-        this.settings = { geminiKey: 'AIzaSyBnoh4wuksrYfklcrsCB56uBjVPw44IIWQ', openaiKey: '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' };
+        this.settings = { geminiKey: '', openaiKey: '' };
         this.init();
     }
 
     init() {
-        console.log('🚀 Inicializando IA-ACMULLER...');
         this.loadSettings();
         this.setupNavigation();
         this.setupChat();
@@ -17,7 +16,6 @@ class ACMullerAI {
         this.setupVideo();
         this.setupSettingsButton();
         this.updateModelStatus();
-        console.log('✅ Inicialização completa. Settings:', this.settings);
     }
 
     setupSettingsButton() {
@@ -25,128 +23,65 @@ class ACMullerAI {
         if (settingsBtn) {
             settingsBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                console.log('⚙️ Botão configurações clicado');
                 this.toggleSettings();
             });
         }
 
-        // Botão salvar
-        const saveBtn = document.querySelector('.modal-footer .btn-primary');
-        if (saveBtn) {
-            saveBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('💾 Botão salvar clicado');
-                this.saveSettings();
-            });
-        }
-
-        // Fechar ao clicar fora
         const modal = document.getElementById('settings-modal');
         if (modal) {
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.toggleSettings();
-                }
+                if (e.target === modal) this.toggleSettings();
             });
         }
     }
 
     toggleSettings() {
         const modal = document.getElementById('settings-modal');
-        if (!modal) {
-            console.error('❌ Modal não encontrado');
-            return;
-        }
+        if (!modal) return;
 
         const isActive = modal.classList.contains('active');
         if (isActive) {
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
-            console.log('🔒 Modal fechado');
         } else {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             this.loadSettingsToForm();
-            console.log('🔓 Modal aberto');
         }
     }
 
     loadSettings() {
         try {
             const saved = localStorage.getItem('acmuller-settings');
-            console.log('📂 Dados salvos no localStorage:', saved);
-
             if (saved) {
                 const parsed = JSON.parse(saved);
                 this.settings = {
                     geminiKey: parsed.geminiKey || '',
                     openaiKey: parsed.openaiKey || ''
                 };
-                console.log('✅ Settings carregados:', {
-                    geminiKey: this.settings.geminiKey ? '***' : '(vazio)',
-                    openaiKey: this.settings.openaiKey ? '***' : '(vazio)'
-                });
-            } else {
-                console.log('⚠️ Nenhuma configuração salva encontrada');
             }
         } catch (e) {
-            console.error('❌ Erro ao carregar settings:', e);
-            this.settings = { geminiKey: '', openaiKey: '' };
+            console.error('Erro ao carregar settings:', e);
         }
     }
 
     loadSettingsToForm() {
         const geminiInput = document.getElementById('gemini-key');
         const openaiInput = document.getElementById('openai-key');
-
-        if (geminiInput) {
-            geminiInput.value = this.settings.geminiKey;
-            console.log('📝 Campo Gemini preenchido');
-        }
-        if (openaiInput) {
-            openaiInput.value = this.settings.openaiKey;
-            console.log('📝 Campo OpenAI preenchido');
-        }
+        if (geminiInput) geminiInput.value = this.settings.geminiKey;
+        if (openaiInput) openaiInput.value = this.settings.openaiKey;
     }
 
     saveSettings() {
-        console.log('💾 Iniciando salvamento...');
-
-        const geminiInput = document.getElementById('gemini-key');
-        const openaiInput = document.getElementById('openai-key');
-
-        if (!geminiInput || !openaiInput) {
-            console.error('❌ Campos de input não encontrados');
-            alert('Erro: Campos não encontrados');
-            return;
-        }
-
-        const geminiKey = geminiInput.value.trim();
-        const openaiKey = openaiInput.value.trim();
-
-        console.log('📋 Valores dos campos:', {
-            geminiKey: geminiKey ? '*** (preenchido)' : '(vazio)',
-            openaiKey: openaiKey ? '*** (preenchido)' : '(vazio)'
-        });
+        const geminiKey = document.getElementById('gemini-key')?.value?.trim() || '';
+        const openaiKey = document.getElementById('openai-key')?.value?.trim() || '';
 
         this.settings = { geminiKey, openaiKey };
+        localStorage.setItem('acmuller-settings', JSON.stringify(this.settings));
 
-        try {
-            localStorage.setItem('acmuller-settings', JSON.stringify(this.settings));
-            console.log('✅ Salvado no localStorage com sucesso');
-
-            // Verificar se salvou
-            const verify = localStorage.getItem('acmuller-settings');
-            console.log('🔍 Verificação:', verify ? 'OK' : 'FALHOU');
-
-            this.toggleSettings();
-            this.updateModelStatus();
-            this.showNotification('✅ Configurações salvas!', 'success');
-        } catch (e) {
-            console.error('❌ Erro ao salvar:', e);
-            alert('Erro ao salvar: ' + e.message);
-        }
+        this.toggleSettings();
+        this.updateModelStatus();
+        this.showNotification('✅ Configurações salvas!', 'success');
     }
 
     setupNavigation() {
@@ -176,7 +111,6 @@ class ACMullerAI {
             modelSelect.addEventListener('change', (e) => {
                 this.currentModel = e.target.value;
                 this.updateModelStatus();
-                console.log('🔄 Modelo alterado para:', this.currentModel);
             });
         }
     }
@@ -187,10 +121,7 @@ class ACMullerAI {
             : this.settings.openaiKey;
         const status = hasKey ? '🟢 Pronto' : '⚠️ Sem API Key';
         const statusEl = document.getElementById('model-status');
-        if (statusEl) {
-            statusEl.textContent = status;
-        }
-        console.log('📊 Status atualizado:', status);
+        if (statusEl) statusEl.textContent = status;
     }
 
     setupChat() {
@@ -214,19 +145,11 @@ class ACMullerAI {
         const message = input.value.trim();
         if (!message) return;
 
-        console.log('📤 Enviando mensagem:', message);
-        console.log('🔑 Modelo atual:', this.currentModel);
-        console.log('🔑 Settings:', {
-            geminiKey: this.settings.geminiKey ? '***' : '(vazio)',
-            openaiKey: this.settings.openaiKey ? '***' : '(vazio)'
-        });
-
         const apiKey = this.currentModel === 'gemini' 
             ? this.settings.geminiKey 
             : this.settings.openaiKey;
 
         if (!apiKey) {
-            console.error('❌ API Key não configurada');
             this.showNotification('❌ Configure a API Key primeiro!', 'error');
             this.toggleSettings();
             return;
@@ -248,17 +171,15 @@ class ACMullerAI {
             this.removeTyping(typingId);
             this.addMessage(response, 'ai');
         } catch (error) {
-            console.error('❌ Erro na chamada API:', error);
             this.removeTyping(typingId);
             this.addMessage('❌ Erro: ' + error.message, 'ai');
         }
     }
 
     async callGemini(message, apiKey) {
-        const model = 'gemini-1.5-flash-latest';
+        // CORREÇÃO: Usar gemini-pro que funciona com API key gratuita
+        const model = 'gemini-pro';
         const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey;
-
-        console.log('🌐 Chamando Gemini API...');
 
         const response = await fetch(url, {
             method: 'POST',
@@ -271,7 +192,6 @@ class ACMullerAI {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('❌ Gemini API Error:', errorData);
             throw new Error(errorData.error?.message || 'Erro na API Gemini');
         }
 
@@ -280,31 +200,9 @@ class ACMullerAI {
     }
 
     async callOpenAI(message, apiKey) {
-        console.log('🌐 Chamando OpenAI API...');
-
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + apiKey,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    { role: 'system', content: 'Você é o IA-ACMULLER, assistente brasileiro útil.' },
-                    { role: 'user', content: message }
-                ],
-                temperature: 0.7
-            })
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Erro na API OpenAI');
-        }
-
-        const data = await response.json();
-        return data.choices?.[0]?.message?.content || 'Sem resposta';
+        // OpenAI pode ter problema de CORS no frontend
+        // Vamos usar um proxy ou mostrar mensagem informativa
+        throw new Error('OpenAI requer backend (CORS). Use Google Gemini que é gratuito e funciona direto!');
     }
 
     addMessage(text, sender) {
@@ -356,12 +254,10 @@ class ACMullerAI {
         if (!output) return;
 
         output.textContent = '⏳ Executando...';
-
         try {
             let logs = [];
             const originalLog = console.log;
             console.log = (...args) => logs.push(args.join(' '));
-
             const result = eval(code);
             console.log = originalLog;
             output.textContent = logs.join('\n') || String(result) || '✅ Executado';
@@ -372,17 +268,12 @@ class ACMullerAI {
 
     async explainCode() {
         const code = document.getElementById('code-editor')?.value || '';
-        const apiKey = this.settings.geminiKey || this.settings.openaiKey;
-        if (!apiKey) {
+        if (!this.settings.geminiKey) {
             this.showNotification('Configure API Key primeiro!', 'error');
             return;
         }
-
         try {
-            const prompt = 'Explique este código:\n\n' + code;
-            const response = this.currentModel === 'gemini' 
-                ? await this.callGemini(prompt, apiKey)
-                : await this.callOpenAI(prompt, apiKey);
+            const response = await this.callGemini('Explique este código:\n\n' + code, this.settings.geminiKey);
             alert('💡 Explicação:\n\n' + response);
         } catch (error) {
             alert('❌ Erro: ' + error.message);
@@ -423,16 +314,7 @@ class ACMullerAI {
             }
             const transcriptEl = document.getElementById('voice-transcript');
             if (transcriptEl) transcriptEl.textContent = transcript;
-
-            if (event.results[0].isFinal) {
-                this.processVoice(transcript);
-            }
-        };
-
-        this.recognition.onerror = (event) => {
-            console.error('Erro de voz:', event.error);
-            const status = document.getElementById('voice-status');
-            if (status) status.textContent = '❌ Erro: ' + event.error;
+            if (event.results[0].isFinal) this.processVoice(transcript);
         };
     }
 
@@ -441,7 +323,6 @@ class ACMullerAI {
             this.showNotification('Seu navegador não suporta reconhecimento de voz', 'error');
             return;
         }
-
         const btn = document.getElementById('mic-btn');
         if (btn && btn.classList.contains('recording')) {
             this.recognition.stop();
@@ -451,21 +332,16 @@ class ACMullerAI {
     }
 
     async processVoice(text) {
-        const apiKey = this.settings.geminiKey || this.settings.openaiKey;
-        if (!apiKey) {
+        if (!this.settings.geminiKey) {
             this.showNotification('Configure API Key primeiro!', 'error');
             return;
         }
-
         const responseEl = document.getElementById('voice-response');
         if (responseEl) responseEl.innerHTML = '<div class="loading"></div> Processando...';
 
         try {
-            const response = this.currentModel === 'gemini'
-                ? await this.callGemini(text, apiKey)
-                : await this.callOpenAI(text, apiKey);
+            const response = await this.callGemini(text, this.settings.geminiKey);
             if (responseEl) responseEl.textContent = response;
-
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(response);
                 utterance.lang = 'pt-BR';
@@ -479,13 +355,9 @@ class ACMullerAI {
     setupVideo() {
         const dropZone = document.getElementById('video-drop-zone');
         const fileInput = document.getElementById('video-input');
-
         if (dropZone && fileInput) {
             dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { 
-                e.preventDefault(); 
-                dropZone.classList.add('dragover'); 
-            });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
@@ -503,26 +375,20 @@ class ACMullerAI {
         const player = document.getElementById('video-player');
         const dropZone = document.getElementById('video-drop-zone');
         const preview = document.getElementById('video-preview');
-
         if (player) player.src = url;
         if (dropZone) dropZone.style.display = 'none';
         if (preview) preview.style.display = 'grid';
     }
 
     async analyzeVideo() {
-        const apiKey = this.settings.geminiKey || this.settings.openaiKey;
-        if (!apiKey) {
+        if (!this.settings.geminiKey) {
             this.showNotification('Configure API Key primeiro!', 'error');
             return;
         }
-
         const results = document.getElementById('video-results');
         if (results) results.innerHTML = '<div class="loading"></div> Analisando...';
-
         setTimeout(() => {
-            if (results) {
-                results.innerHTML = '<p>📸 Vídeo carregado!</p><p>Funcionalidade completa em breve.</p>';
-            }
+            if (results) results.innerHTML = '<p>📸 Vídeo carregado!</p><p>Funcionalidade completa em breve.</p>';
         }, 1000);
     }
 
@@ -532,32 +398,23 @@ class ACMullerAI {
             this.showNotification('Digite um objetivo primeiro!', 'error');
             return;
         }
-
-        const apiKey = this.settings.geminiKey || this.settings.openaiKey;
-        if (!apiKey) {
+        if (!this.settings.geminiKey) {
             this.showNotification('Configure API Key primeiro!', 'error');
             this.toggleSettings();
             return;
         }
-
         const setup = document.querySelector('.agent-setup');
         const execution = document.getElementById('agent-execution');
         const steps = document.getElementById('agent-steps');
-
         if (setup) setup.style.display = 'none';
         if (execution) execution.style.display = 'block';
         if (steps) steps.innerHTML = '<div class="loading"></div> Executando...';
 
         try {
-            const response = this.currentModel === 'gemini'
-                ? await this.callGemini('Execute como agente: ' + goal, apiKey)
-                : await this.callOpenAI('Execute como agente: ' + goal, apiKey);
-
+            const response = await this.callGemini('Execute como agente: ' + goal, this.settings.geminiKey);
             if (steps) steps.innerHTML = '';
             const result = document.getElementById('agent-result');
-            if (result) {
-                result.innerHTML = '<h4>✅ Resultado</h4><div>' + this.formatMessage(response) + '</div>';
-            }
+            if (result) result.innerHTML = '<h4>✅ Resultado</h4><div>' + this.formatMessage(response) + '</div>';
         } catch (error) {
             if (steps) steps.innerHTML = '❌ Erro: ' + error.message;
         }
@@ -580,7 +437,7 @@ class ACMullerAI {
 
     exportConversation() {
         const data = { date: new Date().toISOString(), conversation: this.conversation };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' };
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -589,7 +446,7 @@ class ACMullerAI {
     }
 }
 
-// Inicialização global
+// Inicialização
 const app = new ACMullerAI();
 
 // Funções globais
@@ -604,14 +461,12 @@ function saveSettings() { app.saveSettings(); }
 function clearCurrent() { app.clearCurrent(); }
 function exportConversation() { app.exportConversation(); }
 
-// Atalhos de teclado
+// Fechar modal com ESC
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         const modal = document.getElementById('settings-modal');
-        if (modal && modal.classList.contains('active')) {
-            toggleSettings();
-        }
+        if (modal && modal.classList.contains('active')) toggleSettings();
     }
 });
 
-console.log('✅ IA-ACMULLER v2.0 carregado com debug ativado');
+console.log('✅ IA-ACMULLER v3.0 - Modelo: gemini-pro');
