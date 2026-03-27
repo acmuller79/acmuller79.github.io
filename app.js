@@ -1,5 +1,5 @@
 // IA-ACMULLER - Versao com Modelo Correto
-var config={geminiKey:"AIzaSyBTArtbIimeb-xsypsyhH-DTRSPNLzUHIU"};
+var config={geminiKey:"AIzaSyAECrg_u3IKGGXtndbNa-fIA7PRz3CAIJc"};
 
 function carregarConfig(){
     try{
