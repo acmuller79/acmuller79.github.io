@@ -4,7 +4,7 @@ class ACMullerAI {
     constructor() {
         this.currentModel = 'gemini';
         this.conversation = [];
-        this.settings = { geminiKey: '', openaiKey: '' };
+        this.settings = { geminiKey: 'AIzaSyBnoh4wuksrYfklcrsCB56uBjVPw44IIWQ', openaiKey: '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' };
         this.init();
     }
 
