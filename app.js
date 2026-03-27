@@ -4,7 +4,7 @@ class ACMullerAI {
     constructor() {
         this.currentModel = 'gemini';
         this.conversation = [];
-        this.settings = { geminiKey: '', openaiKey: '' };
+        this.settings = { geminiKey: 'AIzaSyBnoh4wuksrYfklcrsCB56uBjVPw44IIWQ', openaiKey: '' };
         this.init();
     }
 
