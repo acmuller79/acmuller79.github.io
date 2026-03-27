@@ -4,7 +4,7 @@
 app_js_correto = '''// IA-ACMULLER - Versão Corrigida
 
 // Configurações
-let config = { geminiKey: '', openaiKey: '' };
+let config = { geminiKey: 'AIzaSyBnoh4wuksrYfklcrsCB56uBjVPw44IIWQ', openaiKey: '' };
 let modeloAtual = 'gemini';
 
 // Carregar configurações
