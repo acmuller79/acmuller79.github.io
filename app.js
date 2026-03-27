@@ -14,19 +14,16 @@ class ACMullerAI {
         this.setupChat();
         this.setupVoice();
         this.setupVideo();
-        this.setupSettingsButton(); // NOVO: configurar botão de settings
+        this.setupSettingsButton();
         this.updateModelStatus();
 
-        // Preencher campos de configuração
         this.loadSettingsToForm();
 
-        // Verificar se tem API key
         if (!this.settings.geminiKey && !this.settings.openaiKey) {
             setTimeout(() => this.showNotification('⚠️ Configure sua API Key nas configurações!', 'warning'), 1000);
         }
     }
 
-    // NOVO: Configurar botão de settings explicitamente
     setupSettingsButton() {
         const settingsBtn = document.querySelector('.settings-btn');
         if (settingsBtn) {
@@ -35,12 +32,8 @@ class ACMullerAI {
                 e.stopPropagation();
                 this.toggleSettings();
             });
-            console.log('✅ Botão de configurações configurado');
-        } else {
-            console.error('❌ Botão .settings-btn não encontrado');
         }
 
-        // Fechar modal ao clicar fora
         const modal = document.getElementById('settings-modal');
         if (modal) {
             modal.addEventListener('click', (e) => {
@@ -51,7 +44,6 @@ class ACMullerAI {
         }
     }
 
-    // NOVO: Função toggleSettings dentro da classe
     toggleSettings() {
         const modal = document.getElementById('settings-modal');
         if (modal) {
@@ -62,14 +54,11 @@ class ACMullerAI {
             } else {
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
-                // Preencher campos ao abrir
                 this.loadSettingsToForm();
             }
-            console.log('Modal de configurações:', isActive ? 'fechado' : 'aberto');
         }
     }
 
-    // NOVO: Carregar settings para o formulário
     loadSettingsToForm() {
         const geminiInput = document.getElementById('gemini-key');
         const openaiInput = document.getElementById('openai-key');
@@ -78,7 +67,6 @@ class ACMullerAI {
         if (openaiInput) openaiInput.value = this.settings.openaiKey || '';
     }
 
-    // ==================== NAVEGAÇÃO ====================
     setupNavigation() {
         const navItems = document.querySelectorAll('.nav-item');
         const sections = document.querySelectorAll('.section');
@@ -113,7 +101,6 @@ class ACMullerAI {
         document.getElementById('model-status').textContent = status;
     }
 
-    // ==================== CHAT ====================
     setupChat() {
         const input = document.getElementById('chat-input');
         input.addEventListener('keydown', (e) => {
@@ -133,11 +120,10 @@ class ACMullerAI {
         const message = input.value.trim();
         if (!message) return;
 
-        // Verificar API key
         const apiKey = this.currentModel === 'gemini' ? this.settings.geminiKey : this.settings.openaiKey;
         if (!apiKey) {
             this.showNotification('❌ Configure a API Key primeiro!', 'error');
-            this.toggleSettings(); // Abre configurações automaticamente
+            this.toggleSettings();
             return;
         }
 
@@ -163,8 +149,11 @@ class ACMullerAI {
     }
 
     async callGemini(message, apiKey) {
+        // CORREÇÃO: Usar gemini-1.5-flash-latest que funciona com a API key gratuita
+        const model = 'gemini-1.5-flash-latest';
+
         const response = await fetch(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey,
+            'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -176,8 +165,9 @@ class ACMullerAI {
         );
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Erro na API Gemini');
+            const errorData = await response.json();
+            console.error('Gemini API Error:', errorData);
+            throw new Error(errorData.error?.message || 'Erro na API Gemini (HTTP ' + response.status + ')');
         }
 
         const data = await response.json();
@@ -212,7 +202,6 @@ class ACMullerAI {
 
     addMessage(text, sender) {
         const container = document.getElementById('chat-messages');
-        // Remover mensagem de boas-vindas se existir
         const welcome = container.querySelector('.welcome-message');
         if (welcome && sender === 'user') welcome.remove();
 
@@ -250,7 +239,6 @@ class ACMullerAI {
         if (el) el.remove();
     }
 
-    // ==================== CÓDIGO ====================
     runCode() {
         const code = document.getElementById('code-editor').value;
         const output = document.getElementById('output-content');
@@ -289,7 +277,6 @@ class ACMullerAI {
         }
     }
 
-    // ==================== VOZ ====================
     setupVoice() {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             document.getElementById('voice-status').textContent = '❌ Navegador não suporta voz';
@@ -358,7 +345,6 @@ class ACMullerAI {
                 : await this.callOpenAI(text, apiKey);
             document.getElementById('voice-response').textContent = response;
 
-            // Falar resposta
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(response);
                 utterance.lang = 'pt-BR';
@@ -369,7 +355,6 @@ class ACMullerAI {
         }
     }
 
-    // ==================== VÍDEO ====================
     setupVideo() {
         const dropZone = document.getElementById('video-drop-zone');
         const fileInput = document.getElementById('video-input');
@@ -417,7 +402,6 @@ class ACMullerAI {
         }, 1000);
     }
 
-    // ==================== AGENTE ====================
     async startAgent() {
         const goal = document.getElementById('agent-goal').value;
         if (!goal) {
@@ -448,7 +432,6 @@ class ACMullerAI {
         }
     }
 
-    // ==================== CONFIGURAÇÕES ====================
     loadSettings() {
         try {
             const saved = localStorage.getItem('acmuller-settings');
@@ -468,8 +451,6 @@ class ACMullerAI {
         this.toggleSettings();
         this.updateModelStatus();
         this.showNotification('✅ Configurações salvas!', 'success');
-
-        console.log('Settings saved:', { geminiKey: geminiKey ? '***' : '', openaiKey: openaiKey ? '***' : '' });
     }
 
     showNotification(msg, type) {
@@ -488,7 +469,7 @@ class ACMullerAI {
 
     exportConversation() {
         const data = { date: new Date().toISOString(), conversation: this.conversation };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' };
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -497,10 +478,9 @@ class ACMullerAI {
     }
 }
 
-// ==================== FUNÇÕES GLOBAIS ====================
+// Funções globais
 const app = new ACMullerAI();
 
-// Garantir que as funções globais existam
 function sendMessage() { app.sendMessage(); }
 function toggleVoice() { app.toggleVoice(); }
 function runCode() { app.runCode(); }
@@ -512,7 +492,6 @@ function saveSettings() { app.saveSettings(); }
 function clearCurrent() { app.clearCurrent(); }
 function exportConversation() { app.exportConversation(); }
 
-// Atalhos de teclado
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         const modal = document.getElementById('settings-modal');
@@ -522,4 +501,4 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-console.log('✅ IA-ACMULLER carregado com sucesso!');
+console.log('✅ IA-ACMULLER carregado - Modelo: gemini-1.5-flash-latest');
