@@ -1,32 +1,12 @@
-// IA-ACMULLER - Versao com Modelo Correto
+// IA-ACMULLER - Versao com Chave Embutida
 var config={geminiKey:"AIzaSyAECrg_u3IKGGXtndbNa-fIA7PRz3CAIJc"};
-
-function carregarConfig(){
-    try{
-        var s=localStorage.getItem("acmuller-settings");
-        if(s)config=JSON.parse(s);
-    }catch(e){}
-}
-
-function salvarConfig(){
-    config.geminiKey=document.getElementById("gemini-key").value.trim();
-    localStorage.setItem("acmuller-settings",JSON.stringify(config));
-    fecharModal();
-    atualizarStatus();
-    alert("Configuracoes salvas!");
-}
 
 function abrirModal(){
     document.getElementById("settings-modal").style.display="flex";
-    document.getElementById("gemini-key").value=config.geminiKey;
 }
 
 function fecharModal(){
     document.getElementById("settings-modal").style.display="none";
-}
-
-function atualizarStatus(){
-    document.getElementById("model-status").textContent=config.geminiKey?"Pronto":"Configure API Key";
 }
 
 function enviarMensagem(){
@@ -35,8 +15,7 @@ function enviarMensagem(){
     if(!msg)return;
 
     if(!config.geminiKey){
-        alert("Configure a API Key primeiro!");
-        abrirModal();
+        alert("API Key nao configurada!");
         return;
     }
 
@@ -45,8 +24,8 @@ function enviarMensagem(){
 
     var typingId=mostrarDigitando();
 
-    // MODELO CORRETO: gemini-1.5-flash-8b (funciona com API key gratuita)
-    var url="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key="+config.geminiKey;
+    // Modelo gemini-pro (mais estavel)
+    var url="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="+config.geminiKey;
 
     fetch(url,{
         method:"POST",
@@ -66,17 +45,14 @@ function enviarMensagem(){
     })
     .catch(function(e){
         removerDigitando(typingId);
-        // Se der erro 404, tenta com gemini-pro
-        if(e.message.includes("404")||e.message.includes("not found")){
-            adicionarMensagem("Erro: Modelo nao encontrado. Tente recriar a API key em https://makersuite.google.com/app/apikey","ai");
-        }else{
-            adicionarMensagem("Erro: "+e.message,"ai");
-        }
+        adicionarMensagem("Erro: "+e.message,"ai");
     });
 }
 
 function adicionarMensagem(texto,tipo){
     var container=document.getElementById("chat-messages");
+    var welcome=container.querySelector(".welcome-message");
+    if(welcome&&tipo==="user")welcome.remove();
     var div=document.createElement("div");
     div.className="message "+tipo;
     div.innerHTML='<div class="message-avatar">'+(tipo==="user"?"👤":"🤖")+'</div><div class="message-content">'+texto.replace(/\n/g,"<br>")+'</div>';
@@ -130,7 +106,7 @@ function limparChat(){
 }
 
 function exportarConversa(){
-    var dados={data:new Date().toISOString(),config:config};
+    var dados={data:new Date().toISOString()};
     var blob=new Blob([JSON.stringify(dados,null,2)],{type:"application/json"});
     var url=URL.createObjectURL(blob);
     var a=document.createElement("a");
@@ -140,9 +116,6 @@ function exportarConversa(){
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-    carregarConfig();
-    atualizarStatus();
-
     document.getElementById("chat-input").addEventListener("keydown",function(e){
         if(e.key==="Enter"&&!e.shiftKey){
             e.preventDefault();
@@ -156,5 +129,5 @@ document.addEventListener("DOMContentLoaded",function(){
         });
     });
 
-    console.log("IA-ACMULLER carregado! Modelo: gemini-1.5-flash-8b");
+    console.log("IA-ACMULLER pronto! Chave configurada.");
 });
